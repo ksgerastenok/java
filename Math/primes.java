@@ -1,92 +1,9 @@
 import java.util.*;
 import java.util.stream.*;
 
-//class Folder extends Object {
-//    private Long size;
-//    private final String full;
-//    private final String name;
-//    private final Folder parent;
-//    private final Set<File> files;
-//    private final Set<Folder> folders;
-//
-//    public Folder(String name, Folder parent) {
-//        this.full = (parent != null) ? parent.getFullName() + "/" + name : name;
-//        this.size = 0L;
-//        this.name = name;
-//        this.parent = parent;
-//        this.files = new HashSet<>();
-//        this.folders = new HashSet<>();
-//    }
-//
-//    public String getName() {
-//        return this.name;
-//    }
-//
-//    public String getFullName() {
-//        return this.full;
-//    }
-//
-//    public Long getSize() {
-//        return this.size;
-//    }
-//
-//    public void delete() {
-//        for (File file : this.files) {
-//            file.delete();
-//        }
-//        //this.files.clear();
-//
-//        for (Folder folder : this.folders) {
-//            folder.delete();
-//        }
-//        //this.folders.clear();
-//
-//        if (this.parent != null) {
-//            this.parent.removeFolder(this);
-//        }
-//
-//        System.out.println("Folder " + this.full + " has been deleted.");
-//    }
-//
-//    void removeFolder(Folder folder) {
-//        this.folders.remove(folder);
-//    }
-//
-//    void removeFile(File file) {
-//        this.files.remove(file);
-//    }
-//
-//    public void addFolder(String name) {
-//        this.folders.add(new Folder(name, this));
-//    }
-//
-//    public void addFile(String name) {
-//        this.files.add(new File(name, this));
-//    }
-//
-//    public Set<Folder> getFolders() {
-//        return Collections.unmodifiableSet(this.folders);
-//    }
-//
-//    public Set<File> getFiles() {
-//        return Collections.unmodifiableSet(this.files);
-//    }
-//
-//    public Folder toFolder(String name) {
-//        return this.folders.stream()
-//            .filter(s -> s.getName().equals(name))
-//            .findFirst()
-//            .orElse(null);
-//    }
-//
-//    public File toFile(String name) {
-//        return this.files.stream()
-//            .filter(s -> s.getName().equals(name))
-//            .findFirst()
-//            .orElse(null);
-//    }
-//
-//    public void update(Long delta) {
+
+
+public void update(Long delta) {
 //        if (this.parent != null) {
 //            this.parent.update(delta);
 //        }
@@ -129,9 +46,6 @@ import java.util.stream.*;
 //            this.parent.removeFile(this);
 //        }
 //
-//        System.out.println("File " + this.full + " has been deleted.");
-//    }
-//}
 
 public class Program extends Object {
     private static List<Integer> getPrimes(int n) {
