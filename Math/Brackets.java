@@ -10,6 +10,7 @@ public class Brackets extends Object {
                 for (String y : genrec(i - 1)) {
                     result.add("(" + ")" + x + y);
                     result.add("(" + x + ")" + y);
+                    result add("(" + x + y + ")");
                     result.add(x + "(" + ")" + y);
                     result.add(x + "(" + y + ")");
                     result.add(x + y + "(" + ")");
@@ -33,6 +34,7 @@ public class Brackets extends Object {
                     for (String y : result.get(i - 1)) {
                         result.get(k).add("(" + ")" + x + y);
                         result.get(k).add("(" + x + ")" + y);
+                        result.get(k).add("(" + x + y + ")");
                         result.get(k).add(x + "(" + ")" + y);
                         result.get(k).add(x + "(" + y + ")");
                         result.get(k).add(x + y + "(" + ")");
