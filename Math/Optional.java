@@ -100,7 +100,7 @@ public final class Optional<T> {
         if (Objects.nonNull(supplier)) {
             return supplier.get();
         }
-        throw new NullPointerException();
+        return null;
     }
 
     public T orElseThrow() {
