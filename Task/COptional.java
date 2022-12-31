@@ -3,7 +3,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.Predicate;
 
 final class COptional<T> {
     private final Supplier<T> value;
@@ -26,16 +25,6 @@ final class COptional<T> {
         return new COptional<>(() -> {
             T tmp = value;
             if (Objects.nonNull(tmp)) {
-                return tmp;
-            }
-            return null;
-        });
-    }
-
-    public COptional<T> filter(Predicate<T> predicate) {
-        return new COptional<>(() -> {
-            T tmp = COptional.this.value.get();
-            if (Objects.nonNull(tmp) && Objects.nonNull(predicate) && predicate.test(tmp)) {
                 return tmp;
             }
             return null;
@@ -68,6 +57,16 @@ final class COptional<T> {
         });
     }
 
+    public COptional<T> filter(Function<T, Boolean> function) {
+        return new COptional<>(() -> {
+            T tmp = COptional.this.value.get();
+            if (Objects.nonNull(tmp) && Objects.nonNull(function) && function.apply(tmp)) {
+                return tmp;
+            }
+            return null;
+        });
+    }
+
     public <U> COptional<U> flatMap(Function<T, COptional<U>> function) {
         return new COptional<>(() -> {
             T tmp = COptional.this.value.get();
@@ -86,14 +85,6 @@ final class COptional<T> {
             }
             return null;
         });
-    }
-
-    public <U> U apply(Function<T, U> function) {
-        T tmp = COptional.this.value.get();
-        if (Objects.nonNull(tmp) && Objects.nonNull(function)) {
-            return function.apply(tmp);
-        }
-        return null;
     }
 
     public T orElse(T other) {
