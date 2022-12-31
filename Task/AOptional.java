@@ -3,7 +3,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.Predicate;
 
 abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> of(T value) {
@@ -25,18 +24,6 @@ abstract class AOptional<T> implements Supplier<T> {
                     return tmp;
                 }
                 return null;            }
-        };
-    }
-
-    public AOptional<T> filter(Predicate<T> predicate) {
-        return new AOptional<>() {
-            public T get() {
-                T tmp = AOptional.this.get();
-                if (Objects.nonNull(tmp) && Objects.nonNull(predicate) && predicate.test(tmp)) {
-                    return tmp;
-                }
-                return null;
-            }
         };
     }
 
@@ -70,6 +57,18 @@ abstract class AOptional<T> implements Supplier<T> {
         };
     }
 
+    public AOptional<T> filter(Function<T, Boolean> function) {
+        return new AOptional<>() {
+            public T get() {
+                T tmp = AOptional.this.get();
+                if (Objects.nonNull(tmp) && Objects.nonNull(function) && function.apply(tmp)) {
+                    return tmp;
+                }
+                return null;
+            }
+        };
+    }
+
     public <U> AOptional<U> flatMap(Function<T, AOptional<U>> function) {
         return new AOptional<>() {
             public U get() {
@@ -92,14 +91,6 @@ abstract class AOptional<T> implements Supplier<T> {
                 return null;
             }
         };
-    }
-
-    public <U> U apply(Function<T, U> function) {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp) && Objects.nonNull(function)) {
-            return function.apply(tmp);
-        }
-        return null;
     }
 
     public T orElse(T other) {
