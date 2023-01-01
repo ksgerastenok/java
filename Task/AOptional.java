@@ -12,7 +12,8 @@ abstract class AOptional<T> implements Supplier<T> {
                 if (Objects.nonNull(tmp)) {
                     return tmp;
                 }
-                throw new NullPointerException();            }
+                throw new NullPointerException();
+            }
         };
     }
 
@@ -23,7 +24,8 @@ abstract class AOptional<T> implements Supplier<T> {
                 if (Objects.nonNull(tmp)) {
                     return tmp;
                 }
-                return null;            }
+                return null;
+            }
         };
     }
 
