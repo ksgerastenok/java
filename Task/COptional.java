@@ -50,7 +50,7 @@ final class COptional<T> {
             if (Objects.nonNull(tmp)) {
                 return tmp;
             }
-            if (Objects.nonNull(supplier)) {
+            if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
                 return supplier.get().value.get();
             }
             return null;
@@ -103,7 +103,7 @@ final class COptional<T> {
         if (Objects.nonNull(tmp)) {
             return tmp;
         }
-        if (Objects.nonNull(supplier)) {
+        if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
             return supplier.get();
         }
         return null;
@@ -133,7 +133,7 @@ final class COptional<T> {
         if (Objects.nonNull(tmp)) {
             return tmp;
         }
-        if (Objects.nonNull(supplier)) {
+        if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
             throw supplier.get();
         }
         throw new NullPointerException();
@@ -189,7 +189,7 @@ final class COptional<T> {
                 .isPresent();
     }
 
-    public <U> boolean equals(COptional<U> other) {
+    private <U> boolean equals(COptional<U> other) {
         return Objects.equals(other.value.get(), COptional.this.value.get());
     }
 }
