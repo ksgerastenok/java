@@ -51,7 +51,7 @@ abstract class AOptional<T> implements Supplier<T> {
                 if (Objects.nonNull(tmp)) {
                     return tmp;
                 }
-                if (Objects.nonNull(supplier)) {
+                if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
                     return supplier.get().get();
                 }
                 return null;
@@ -111,7 +111,7 @@ abstract class AOptional<T> implements Supplier<T> {
         if (Objects.nonNull(tmp)) {
             return tmp;
         }
-        if (Objects.nonNull(supplier)) {
+        if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
             return supplier.get();
         }
         return null;
@@ -141,7 +141,7 @@ abstract class AOptional<T> implements Supplier<T> {
         if (Objects.nonNull(tmp)) {
             return tmp;
         }
-        if (Objects.nonNull(supplier)) {
+        if (Objects.nonNull(supplier) && Objects.nonNull(supplier.get())) {
             throw supplier.get();
         }
         throw new NullPointerException();
@@ -197,7 +197,7 @@ abstract class AOptional<T> implements Supplier<T> {
                 .isPresent();
     }
 
-    public <U> boolean equals(AOptional<U> other) {
+    private <U> boolean equals(AOptional<U> other) {
         return Objects.equals(other.get(), AOptional.this.get());
     }
 }
