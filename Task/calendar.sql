@@ -7,6 +7,6 @@ SELECT
   to_char(trunc(sysdate, 'MM') - to_number(to_char(trunc(sysdate, 'MM'), 'D')) + 7 * (LEVEL - 1) + 6, 'DD.MM.YYYY') AS "SAT",
   to_char(trunc(sysdate, 'MM') - to_number(to_char(trunc(sysdate, 'MM'), 'D')) + 7 * (LEVEL - 1) + 7, 'DD.MM.YYYY') AS "SUN"
 FROM
-  dual
+  sys.dual
 CONNECT BY
   trunc(sysdate, 'MM') - to_number(to_char(trunc(sysdate, 'MM'), 'D')) + 7 * (LEVEL - 1) + 1 < trunc(trunc(sysdate, 'MM') + 35, 'MM');
