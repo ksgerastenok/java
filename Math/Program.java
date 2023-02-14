@@ -52,7 +52,7 @@ public class Program extends Object {
     }
 
     public static int lcm(int a, int b) {
-        return ((a * b) / Program.gcd(b, a % b));
+        return ((a * b) / Program.gcd(a, b));
     }
 
     public static void main(String[] args) {
