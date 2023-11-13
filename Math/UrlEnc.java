@@ -12,14 +12,14 @@ public class Program extends Object {
         }
 
         for (int i = data.length; i != 0; i -= 1) {
-            if (data[i - 1 - count * 2] == ' ') {
-                data[i - 1 - count * 2] = '%';
+            if (data[i - count * 2 - 1] == ' ') {
+                data[i - count * 2 - 1] = '%';
                 data[i - count * 2] = '2';
-                data[i + 1 - count * 2] = '0';
+                data[i - count * 2 + 1] = '0';
                 count -= 1;
             }
 
-            data[i - 1] = data[i - 1 - count * 2];
+            data[i - 1] = data[i - count * 2 - 1];
         }
 
         return;
