@@ -39,8 +39,7 @@ public class Program extends Object {
     public static void main(String[] args) {
         char[] data = new char[] { 'm', ' ', 'y', ' ', 'd', ' ', 'a', ' ', 't', 'a', 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        int result = replace(data, 10);
-        print(data, result);
+        print(data, replace(data, 10));
 
         return;
     }
