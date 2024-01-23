@@ -112,19 +112,11 @@ public enum Serializer {
     }
 
     private static String smart(final Map<Integer, Integer> data) {
-        if (data.keySet().size() <= 120) {
-            return count(data);
-        } else {
-            return array(data);
-        }
+        return (data.keySet().size() <= 120) ? count(data) : array(data);
     }
 
     private static Map<Integer, Integer> smart(final String data) {
-        if (data.contains(":")) {
-            return count(data);
-        } else {
-            return array(data);
-        }
+        return (data.contains(":")) ? count(data) : array(data);
     }
 
     private static String std(final Map<Integer, Integer> data) {
