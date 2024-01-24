@@ -18,9 +18,9 @@ public enum Serializer {
     }
 
     private static String radix36(final int data) {
-        final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         StringBuilder result = (data == 0) ? new StringBuilder("0") : new StringBuilder();
 
+        final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         for (int i = data; i != 0; i /= 36) {
             result.append(alphabet.charAt(i % 36));
         }
@@ -29,9 +29,9 @@ public enum Serializer {
     }
 
     private static int radix36(final String data) {
-        final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int result = 0;
 
+        final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         for (int i = 0; i != data.length(); i += 1) {
             result *= 36;
             result += alphabet.indexOf(data.charAt(i));
