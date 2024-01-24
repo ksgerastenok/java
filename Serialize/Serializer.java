@@ -1,6 +1,5 @@
 package task;
 
-
 import java.util.*;
 import java.util.function.*;
 
@@ -10,10 +9,10 @@ public enum Serializer {
     SMART(Serializer::smart, Serializer::smart),
     STD(Serializer::std, Serializer::std);
 
-    private final Function<Map<Integer, Integer>, String> from;
-    private final Function<String, Map<Integer, Integer>> to;
+    private final Function<List<Integer>, String> from;
+    private final Function<String, List<Integer>> to;
 
-    Serializer(Function<Map<Integer, Integer>, String> from, Function<String, Map<Integer, Integer>> to) {
+    Serializer(Function<List<Integer>, String> from, Function<String, List<Integer>> to) {
         this.from = from;
         this.to = to;
     }
@@ -41,114 +40,98 @@ public enum Serializer {
         return result;
     }
 
-    private static Map<Integer, Integer> counter(final List<Integer> data) {
-        final Map<Integer, Integer> result = new HashMap<>();
+    private static String array(final List<Integer> data) {
+        final StringJoiner result = new StringJoiner(",");
 
-        for (Integer value : data) {
-            result.put(value, result.getOrDefault(value, 0) + 1);
+        final int[] counter = new int[300];
+        for (int value : data) {
+            counter[value - 1] += 1;
+        }
+        for (int i = 0; i != counter.length; i += 1) {
+            result.add(radix36(counter[i]));
         }
 
-        return result;
+        return result.toString();
     }
 
-    private static List<Integer> counter(final Map<Integer, Integer> data) {
+    private static List<Integer> array(final String data) {
         final List<Integer> result = new ArrayList<>();
 
-        for (Map.Entry<Integer, Integer> entry : data.entrySet()) {
-            for (int i = 0; i != entry.getValue(); i += 1) {
-                result.add(entry.getKey());
-            }
-        }
-
-        return result;
-    }
-
-    private static String array(final Map<Integer, Integer> data) {
-        final StringJoiner result = new StringJoiner(",");
-
-        final int[] linear = new int[300];
-        for (Map.Entry<Integer, Integer> entry : data.entrySet()) {
-            linear[entry.getKey() - 1] = entry.getValue();
-        }
-        for (int i = 0; i != linear.length; i += 1) {
-            result.add(radix36(linear[i]));
-        }
-
-        return result.toString();
-    }
-
-    private static Map<Integer, Integer> array(final String data) {
-        final Map<Integer, Integer> result = new HashMap<>();
-
         final String[] numbers = data.split(",");
         for (int i = 0; i != numbers.length; i += 1) {
-            result.put(i + 1, radix36(numbers[i]));
-        }
-
-        return result;
-    }
-
-    private static String count(final Map<Integer, Integer> data) {
-        final StringJoiner result = new StringJoiner(",");
-
-        for (Map.Entry<Integer, Integer> entry : data.entrySet()) {
-            final String[] values = new String[] { radix36(entry.getKey()), radix36(entry.getValue()) };
-            result.add(String.format("%s:%s", values[0], values[1]));
-        }
-
-        return result.toString();
-    }
-
-    private static Map<Integer, Integer> count(final String data) {
-        final Map<Integer, Integer> result = new HashMap<>();
-
-        final String[] numbers = data.split(",");
-        for (int i = 0; i != numbers.length; i += 1) {
-            final String[] values = numbers[i].split(":");
-            result.put(radix36(values[0]), radix36(values[1]));
-        }
-
-        return result;
-    }
-
-    private static String smart(final Map<Integer, Integer> data) {
-        return (data.keySet().size() <= 120) ? count(data) : array(data);
-    }
-
-    private static Map<Integer, Integer> smart(final String data) {
-        return (data.contains(":")) ? count(data) : array(data);
-    }
-
-    private static String std(final Map<Integer, Integer> data) {
-        final StringJoiner result = new StringJoiner(",");
-
-        for (Map.Entry<Integer, Integer> entry : data.entrySet()) {
-            for (int i = 0; i != entry.getValue(); i += 1) {
-                String value = String.valueOf(entry.getKey());
+            int value = i + 1;
+            int count = radix36(numbers[i]);
+            for (int k = 0; k != count; k += 1) {
                 result.add(value);
             }
         }
 
+        return result;
+    }
+
+    private static String count(final List<Integer> data) {
+        final StringJoiner result = new StringJoiner(",");
+
+        final Map<Integer, Integer> counter = new HashMap<>();
+        for (int value : data) {
+            counter.put(value, counter.getOrDefault(value, 0) + 1);
+        }
+        for (Map.Entry<Integer, Integer> entry : counter.entrySet()) {
+            result.add(String.format("%s:%s", radix36(entry.getKey()), radix36(entry.getValue())));
+        }
+
         return result.toString();
     }
 
-    private static Map<Integer, Integer> std(final String data) {
-        final Map<Integer, Integer> result = new HashMap<>();
+    private static List<Integer> count(final String data) {
+        final List<Integer> result = new ArrayList<>();
 
         final String[] numbers = data.split(",");
         for (int i = 0; i != numbers.length; i += 1) {
-            Integer value = Integer.parseInt(numbers[i]);
-            result.put(value, result.getOrDefault(value, 0) + 1);
+            final int value = radix36(numbers[i].split(":")[0]);
+            final int count = radix36(numbers[i].split(":")[1]);
+            for (int k = 0; k != count; k += 1) {
+                result.add(value);
+            }
+        }
+
+        return result;
+    }
+
+    private static String smart(final List<Integer> data) {
+        return (data.stream().distinct().count() <= 120) ? count(data) : array(data);
+    }
+
+    private static List<Integer> smart(final String data) {
+        return (data.contains(":")) ? count(data) : array(data);
+    }
+
+    private static String std(final List<Integer> data) {
+        final StringJoiner result = new StringJoiner(",");
+
+        for (int value : data) {
+            result.add(String.valueOf(value));
+        }
+
+        return result.toString();
+    }
+
+    private static List<Integer> std(final String data) {
+        final List<Integer> result = new ArrayList<>();
+
+        final String[] numbers = data.split(",");
+        for (int i = 0; i != numbers.length; i += 1) {
+            result.add(Integer.parseInt(numbers[i]));
         }
 
         return result;
     }
 
     public String convert(final List<Integer> data) {
-        return this.from.apply(counter(data));
+        return this.from.apply(data);
     }
 
     public List<Integer> convert(final String data) {
-        return counter(this.to.apply(data));
+        return this.to.apply(data);
     }
 }
