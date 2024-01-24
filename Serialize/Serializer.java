@@ -59,8 +59,8 @@ public enum Serializer {
 
         final String[] numbers = data.split(",");
         for (int i = 0; i != numbers.length; i += 1) {
-            int value = i + 1;
-            int count = radix36(numbers[i]);
+            final int value = i + 1;
+            final int count = radix36(numbers[i]);
             for (int k = 0; k != count; k += 1) {
                 result.add(value);
             }
