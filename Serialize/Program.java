@@ -17,21 +17,11 @@ public class Program {
         System.out.println();
     }
 
-    private static void testShort(final int count) {
-        System.out.printf("Test short numbers (1-9) at count %d.", count);
+    private static void testBetween(final int min, final int max, final int count) {
+        System.out.printf("Test numbers (%d-%d) at count %d.", min, max, count);
         System.out.println();
         final List<Integer> result = new ArrayList<>();
         for (int i = 0; i != count; i += 1) {
-            result.add(random.nextInt(9 - 1 + 1) + 1);
-        }
-        test(result);
-    }
-
-    private static void testBetween(final int min, final int max) {
-        System.out.printf("Test numbers (%d-%d) at count 1000.", min, max);
-        System.out.println();
-        final List<Integer> result = new ArrayList<>();
-        for (int i = 0; i != 1000; i += 1) {
             result.add(random.nextInt(max - min + 1) + min);
         }
         test(result);
@@ -50,13 +40,13 @@ public class Program {
     }
 
     public static void main(String[] args) {
-        testShort(50);
-        testShort(100);
-        testShort(500);
-        testShort(1000);
-        testBetween(1, 9);
-        testBetween(10, 99);
-        testBetween(100, 300);
+        testBetween(1, 9, 50);
+        testBetween(1, 9, 100);
+        testBetween(1, 9, 500);
+        testBetween(1, 300, 1000);
+        testBetween(1, 9, 1000);
+        testBetween(10, 99, 1000);
+        testBetween(100, 300, 1000);
         testCustom(3);
     }
 }
