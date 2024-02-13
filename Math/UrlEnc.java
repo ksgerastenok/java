@@ -35,7 +35,7 @@ public class Program extends Object {
     }
 
     public static void main(String[] args) {
-        char[] data = new char[] { 'm', ' ', 'y', ' ', 'd', ' ', 'a', 't', ' ', ' ', 't', 'a', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        char[] data = new char[] { 'm', ' ', 'y', ' ', ' ', 'd', ' ', 'a', 't', ' ', 'a', '.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         print(data, replace(data, 12));
 
