@@ -2,14 +2,13 @@ package event;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.*;
 
-public abstract class AStream<T> implements Supplier<List<T>> {
+public abstract class AStream<T> implements Supplier<Collection<T>> {
     public static <T> AStream<T> of(Collection<T> values) {
         return new AStream<>() {
-            public List<T> get() {
+            public Collection<T> get() {
                 if (Objects.nonNull(values)) {
                     return new ArrayList<>(values);
                 }
@@ -20,7 +19,7 @@ public abstract class AStream<T> implements Supplier<List<T>> {
 
     public static <T> AStream<T> ofNullable(Collection<T> values) {
         return new AStream<>() {
-            public List<T> get() {
+            public Collection<T> get() {
                 if (Objects.nonNull(values)) {
                     return new ArrayList<>(values);
                 }
@@ -31,8 +30,8 @@ public abstract class AStream<T> implements Supplier<List<T>> {
 
     public AStream<T> filter(Function<T, Boolean> function) {
         return new AStream<>() {
-            public List<T> get() {
-                List<T> result = new ArrayList<>();
+            public Collection<T> get() {
+                Collection<T> result = new ArrayList<>();
                 if (Objects.nonNull(function)) {
                     for (T value : AStream.this.get()) {
                         if (function.apply(value)) {
@@ -47,8 +46,8 @@ public abstract class AStream<T> implements Supplier<List<T>> {
 
     public <U> AStream<U> map(Function<T, U> function) {
         return new AStream<>() {
-            public List<U> get() {
-                List<U> result = new ArrayList<>();
+            public Collection<U> get() {
+                Collection<U> result = new ArrayList<>();
                 if (Objects.nonNull(function)) {
                     for (T value : AStream.this.get()) {
                         result.add(function.apply(value));
@@ -61,8 +60,8 @@ public abstract class AStream<T> implements Supplier<List<T>> {
 
     public <U> AStream<U> flatMap(Function<T, AStream<U>> function) {
         return new AStream<>() {
-            public List<U> get() {
-                List<U> result = new ArrayList<>();
+            public Collection<U> get() {
+                Collection<U> result = new ArrayList<>();
                 if (Objects.nonNull(function)) {
                     for (T value : AStream.this.get()) {
                         result.addAll(function.apply(value).get());
@@ -72,8 +71,6 @@ public abstract class AStream<T> implements Supplier<List<T>> {
             }
         };
     }
-
-
 
     public void forEach(Consumer<T> consumer) {
         if (Objects.nonNull(consumer)) {
@@ -112,7 +109,7 @@ public abstract class AStream<T> implements Supplier<List<T>> {
         return result;
     }
 
-    public List<T> toList() {
+    public Collection<T> toCollection() {
         return AStream.this.get();
     }
 
