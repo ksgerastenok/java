@@ -1,36 +1,18 @@
-abstract class AOptional<T> implements Supplier<T> {
-    public static <T> AOptional<T> of(Supplier<T> value) {
-        return new AOptional<>() {
-            public T get() {
-                T tmp = value.get();
-                if (Objects.nonNull(tmp)) {
-                    return tmp;
-                }
-                throw new NullPointerException();
-            }
-        };
-    }
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+public abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> of(T value) {
         return new AOptional<>() {
             public T get() {
-                T tmp = value;
-                if (Objects.nonNull(tmp)) {
-                    return tmp;
+                T result = value;
+                if (Objects.nonNull(result)) {
+                    return result;
+                } else {
+                    throw new NullPointerException();
                 }
-                throw new NullPointerException();
-            }
-        };
-    }
-
-    public static <T> AOptional<T> ofNullable(Supplier<T> value) {
-        return new AOptional<>() {
-            public T get() {
-                T tmp = value.get();
-                if (Objects.nonNull(tmp)) {
-                    return tmp;
-                }
-                return null;
             }
         };
     }
@@ -38,11 +20,12 @@ abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> ofNullable(T value) {
         return new AOptional<>() {
             public T get() {
-                T tmp = value;
-                if (Objects.nonNull(tmp)) {
-                    return tmp;
+                T result = value;
+                if (Objects.nonNull(result)) {
+                    return result;
+                } else {
+                    return null;
                 }
-                return null;
             }
         };
     }
@@ -50,25 +33,12 @@ abstract class AOptional<T> implements Supplier<T> {
     public AOptional<T> or(AOptional<T> other) {
         return new AOptional<>() {
             public T get() {
-                T tmp = AOptional.this.get();
-                if (Objects.nonNull(tmp)) {
-                    return tmp;
-                }
-                if (Objects.nonNull(other)) {
+                T result = AOptional.this.get();
+                if (Objects.nonNull(result)) {
+                    return result;
+                } else {
                     return other.get();
                 }
-                return null;
-            }
-        };
-    }
-
-    public AOptional<T> or(Supplier<AOptional<T>> supplier) {
-        return new AOptional<>() {
-            public T get() {
-                if (Objects.nonNull(supplier)) {
-                    return AOptional.this.or(supplier.get()).get();
-                }
-                return null;
             }
         };
     }
@@ -76,15 +46,12 @@ abstract class AOptional<T> implements Supplier<T> {
     public AOptional<T> filter(Function<T, Boolean> function) {
         return new AOptional<>() {
             public T get() {
-                if (Objects.nonNull(function)) {
-                    T tmp = AOptional.this.get();
-                    if (Objects.nonNull(tmp)) {
-                        if (function.apply(tmp)) {
-                            return tmp;
-                        }
-                    }
+                T result = AOptional.this.get();
+                if (Objects.nonNull(function) && Objects.nonNull(result) && function.apply(result)) {
+                    return result;
+                } else {
+                    return null;
                 }
-                return null;
             }
         };
     }
@@ -92,10 +59,12 @@ abstract class AOptional<T> implements Supplier<T> {
     public <U> AOptional<U> flatMap(Function<T, AOptional<U>> function) {
         return new AOptional<>() {
             public U get() {
-                if (Objects.nonNull(function)) {
-                    return AOptional.this.map(function).map(AOptional::get).get();
+                T result = AOptional.this.get();
+                if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                    return function.apply(result).get();
+                } else {
+                    return null;
                 }
-                return null;
             }
         };
     }
@@ -103,115 +72,86 @@ abstract class AOptional<T> implements Supplier<T> {
     public <U> AOptional<U> map(Function<T, U> function) {
         return new AOptional<>() {
             public U get() {
-                if (Objects.nonNull(function)) {
-                    T tmp = AOptional.this.get();
-                    if (Objects.nonNull(tmp)) {
-                        return function.apply(tmp);
-                    }
+                T result = AOptional.this.get();
+                if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                    return function.apply(result);
+                } else {
+                    return null;
                 }
-                return null;
             }
         };
     }
 
     public T orElse(T other) {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(other)) {
+        T result = AOptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
             return other;
         }
-        return null;
-    }
-
-    public T orElse(Supplier<T> supplier) {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(supplier)) {
-            return supplier.get();
-        }
-        return null;
     }
 
     public T orElseThrow() {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
+        T result = AOptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
+            throw new NullPointerException();
         }
-        throw new NullPointerException();
     }
 
-    public <U extends Throwable> T orElseThrow(U throwable) throws U {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
+    public <E extends Exception> T orElseThrow(E exception) throws E {
+        T result = AOptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
+            throw exception;
         }
-        if (Objects.nonNull(throwable)) {
-            throw throwable;
-        }
-        throw new NullPointerException();
-    }
-
-    public <U extends Throwable> T orElseThrow(Supplier<U> supplier) throws U {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(supplier)) {
-            throw supplier.get();
-        }
-        throw new NullPointerException();
     }
 
     public boolean isEmpty() {
-        T tmp = AOptional.this.get();
-        return Objects.isNull(tmp);
+        T result = AOptional.this.get();
+        return Objects.isNull(result);
     }
 
     public boolean isPresent() {
-        T tmp = AOptional.this.get();
-        return Objects.nonNull(tmp);
+        T result = AOptional.this.get();
+        return Objects.nonNull(result);
     }
 
     public void ifPresent(Consumer<T> consumer) {
-        if (Objects.nonNull(consumer)) {
-            T tmp = AOptional.this.get();
-            if (Objects.nonNull(tmp)) {
-                consumer.accept(tmp);
-            }
+        T result = AOptional.this.get();
+        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+            consumer.accept(result);
         }
+        return;
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
-        if (Objects.nonNull(consumer)) {
-            T tmp = AOptional.this.get();
-            if (Objects.nonNull(tmp)) {
-                consumer.accept(tmp);
-            } else {
-                if (Objects.nonNull(runnable)) {
-                    runnable.run();
-                }
-            }
+        T result = AOptional.this.get();
+        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+            consumer.accept(result);
+        } else {
+            runnable.run();
         }
+        return;
     }
 
     public int hashCode() {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp.hashCode();
+        T result = AOptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result.hashCode();
         }
         return 0;
     }
 
     public String toString() {
-        T tmp = AOptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return String.format("AOptional[%s]", tmp);
+        T result = AOptional.this.get();
+        if (Objects.nonNull(result)) {
+            return String.format("AOptional[%s]", result);
+        } else {
+            return String.format("AOptional[%s]", "empty");
         }
-        return String.format("AOptional[%s]", "empty");
     }
 
     public boolean equals(Object other) {
@@ -222,7 +162,7 @@ abstract class AOptional<T> implements Supplier<T> {
                 .isPresent();
     }
 
-    private <U> boolean equals(AOptional<U> other) {
-        return Objects.equals(other.get(), AOptional.this.get());
+    public <U> boolean equals(AOptional<U> other) {
+        return Objects.nonNull(other) && Objects.equals(other.get(), AOptional.this.get());
     }
 }
