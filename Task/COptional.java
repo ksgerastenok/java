@@ -1,3 +1,8 @@
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 final class COptional<T> {
     private Supplier<T> value;
 
@@ -9,202 +14,143 @@ final class COptional<T> {
         return COptional.this.value.get();
     }
 
-    public static <T> COptional<T> of(Supplier<T> value) {
-        return new COptional<>(() -> {
-            T tmp = value.get();
-            if (Objects.nonNull(tmp)) {
-                return tmp;
-            }
-            throw new NullPointerException();
-        });
-    }
-
     public static <T> COptional<T> of(T value) {
         return new COptional<>(() -> {
-            T tmp = value;
-            if (Objects.nonNull(tmp)) {
-                return tmp;
+            T result = value;
+            if (Objects.nonNull(result)) {
+                return result;
+            } else {
+                throw new NullPointerException();
             }
-            throw new NullPointerException();
-        });
-    }
-
-    public static <T> COptional<T> ofNullable(Supplier<T> value) {
-        return new COptional<>(() -> {
-            T tmp = value.get();
-            if (Objects.nonNull(tmp)) {
-                return tmp;
-            }
-            return null;
         });
     }
 
     public static <T> COptional<T> ofNullable(T value) {
         return new COptional<>(() -> {
-            T tmp = value;
-            if (Objects.nonNull(tmp)) {
-                return tmp;
+            T result = value;
+            if (Objects.nonNull(result)) {
+                return result;
+            } else {
+                return null;
             }
-            return null;
         });
     }
-
 
     public COptional<T> or(COptional<T> other) {
         return new COptional<>(() -> {
-            T tmp = COptional.this.get();
-            if (Objects.nonNull(tmp)) {
-                return tmp;
-            }
-            if (Objects.nonNull(other)) {
+            T result = COptional.this.get();
+            if (Objects.nonNull(result)) {
+                return result;
+            } else {
                 return other.get();
             }
-            return null;
-        });
-    }
-
-    public COptional<T> or(Supplier<COptional<T>> supplier) {
-        return new COptional<>(() -> {
-            if (Objects.nonNull(supplier)) {
-                return COptional.this.or(supplier.get()).get();
-            }
-            return null;
         });
     }
 
     public COptional<T> filter(Function<T, Boolean> function) {
         return new COptional<>(() -> {
-            if (Objects.nonNull(function)) {
-                T tmp = COptional.this.get();
-                if (Objects.nonNull(tmp)) {
-                    if (function.apply(tmp)) {
-                        return tmp;
-                    }
-                }
+            T result = COptional.this.get();
+            if (Objects.nonNull(function) && Objects.nonNull(result) && function.apply(result)) {
+                return result;
+            } else {
+                return null;
             }
-            return null;
         });
     }
 
     public <U> COptional<U> flatMap(Function<T, COptional<U>> function) {
         return new COptional<>(() -> {
-            if (Objects.nonNull(function)) {
-                return COptional.this.map(function).map(COptional::get).get();
+            T result = COptional.this.get();
+            if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                return function.apply(result).get();
+            } else {
+                return null;
             }
-            return null;
         });
     }
 
     public <U> COptional<U> map(Function<T, U> function) {
         return new COptional<>(() -> {
-            if (Objects.nonNull(function)) {
-                T tmp = COptional.this.get();
-                if (Objects.nonNull(tmp)) {
-                    return function.apply(tmp);
-                }
+            T result = COptional.this.get();
+            if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                return function.apply(result);
+            } else {
+                return null;
             }
-            return null;
         });
     }
 
     public T orElse(T other) {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(other)) {
+        T result = COptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
             return other;
         }
-        return null;
-    }
-
-    public T orElse(Supplier<T> supplier) {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(supplier)) {
-            return supplier.get();
-        }
-        return null;
     }
 
     public T orElseThrow() {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
+        T result = COptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
+            throw new NullPointerException();
         }
-        throw new NullPointerException();
     }
 
-    public <U extends Throwable> T orElseThrow(U throwable) throws U {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
+    public <E extends Exception> T orElseThrow(E exception) throws E {
+        T result = COptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
+            throw exception;
         }
-        if (Objects.nonNull(throwable)) {
-            throw throwable;
-        }
-        throw new NullPointerException();
-    }
-
-    public <U extends Throwable> T orElseThrow(Supplier<U> supplier) throws U {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp;
-        }
-        if (Objects.nonNull(supplier)) {
-            throw supplier.get();
-        }
-        throw new NullPointerException();
     }
 
     public boolean isEmpty() {
-        T tmp = COptional.this.get();
-        return Objects.isNull(tmp);
+        T result = COptional.this.get();
+        return Objects.isNull(result);
     }
 
     public boolean isPresent() {
-        T tmp = COptional.this.get();
-        return Objects.nonNull(tmp);
+        T result = COptional.this.get();
+        return Objects.nonNull(result);
     }
 
     public void ifPresent(Consumer<T> consumer) {
-        if (Objects.nonNull(consumer)) {
-            T tmp = COptional.this.get();
-            if (Objects.nonNull(tmp)) {
-                consumer.accept(tmp);
-            }
+        T result = COptional.this.get();
+        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+            consumer.accept(result);
         }
+        return;
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
-        if (Objects.nonNull(consumer)) {
-            T tmp = COptional.this.get();
-            if (Objects.nonNull(tmp)) {
-                consumer.accept(tmp);
-            } else {
-                if (Objects.nonNull(runnable)) {
-                    runnable.run();
-                }
-            }
+        T result = COptional.this.get();
+        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+            consumer.accept(result);
+        } else {
+            runnable.run();
         }
+        return;
     }
 
     public int hashCode() {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return tmp.hashCode();
+        T result = COptional.this.get();
+        if (Objects.nonNull(result)) {
+            return result.hashCode();
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     public String toString() {
-        T tmp = COptional.this.get();
-        if (Objects.nonNull(tmp)) {
-            return String.format("COptional[%s]", tmp);
+        T result = COptional.this.get();
+        if (Objects.nonNull(result)) {
+            return String.format("COptional[%s]", result);
+        } else {
+            return String.format("COptional[%s]", "empty");
         }
-        return String.format("COptional[%s]", "empty");
     }
 
     public boolean equals(Object other) {
@@ -215,7 +161,7 @@ final class COptional<T> {
                 .isPresent();
     }
 
-    private <U> boolean equals(COptional<U> other) {
-        return Objects.equals(other.get(), COptional.this.get());
+    public <U> boolean equals(COptional<U> other) {
+        return Objects.nonNull(other) && Objects.equals(other.get(), COptional.this.get());
     }
 }
