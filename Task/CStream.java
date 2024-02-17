@@ -2,18 +2,17 @@ package event;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.*;
 
 public class CStream<T> {
-    private Supplier<List<T>> value;
+    private Supplier<Collection<T>> value;
 
-    private CStream(Supplier<List<T>> value) {
+    private CStream(Supplier<Collection<T>> value) {
         CStream.this.value = value;
     }
 
-    private List<T> get() {
+    private Collection<T> get() {
         return CStream.this.value.get();
     }
 
@@ -37,7 +36,7 @@ public class CStream<T> {
 
     public CStream<T> filter(Function<T, Boolean> function) {
         return new CStream<>(() -> {
-            List<T> result = new ArrayList<>();
+            Collection<T> result = new ArrayList<>();
             if (Objects.nonNull(function)) {
                 for (T value : CStream.this.get()) {
                     if (function.apply(value)) {
@@ -51,7 +50,7 @@ public class CStream<T> {
 
     public <U> CStream<U> map(Function<T, U> function) {
         return new CStream<>(() -> {
-            List<U> result = new ArrayList<>();
+            Collection<U> result = new ArrayList<>();
             if (Objects.nonNull(function)) {
                 for (T value : CStream.this.get()) {
                     result.add(function.apply(value));
@@ -63,7 +62,7 @@ public class CStream<T> {
 
     public <U> CStream<U> flatMap(Function<T, CStream<U>> function) {
         return new CStream<>(() -> {
-            List<U> result = new ArrayList<>();
+            Collection<U> result = new ArrayList<>();
             if (Objects.nonNull(function)) {
                 for (T value : CStream.this.get()) {
                     result.addAll(function.apply(value).get());
@@ -72,8 +71,6 @@ public class CStream<T> {
             return result;
         });
     }
-
-
 
     public void forEach(Consumer<T> consumer) {
         if (Objects.nonNull(consumer)) {
@@ -112,7 +109,7 @@ public class CStream<T> {
         return result;
     }
 
-    public List<T> toList() {
+    public Collection<T> toCollection() {
         return CStream.this.get();
     }
 
