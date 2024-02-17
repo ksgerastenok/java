@@ -141,8 +141,9 @@ public abstract class AOptional<T> implements Supplier<T> {
         T result = AOptional.this.get();
         if (Objects.nonNull(result)) {
             return result.hashCode();
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     public String toString() {
