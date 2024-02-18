@@ -50,8 +50,8 @@ final class COptional<T> {
     public COptional<T> filter(Function<T, Boolean> function) {
         return new COptional<>(() -> {
             T result = COptional.this.get();
-            if (Objects.nonNull(function) && Objects.nonNull(result) && function.apply(result)) {
-                return result;
+            if (Objects.nonNull(result)) {
+                return function.apply(result) ? result : null;
             } else {
                 return null;
             }
@@ -61,7 +61,7 @@ final class COptional<T> {
     public <U> COptional<U> flatMap(Function<T, COptional<U>> function) {
         return new COptional<>(() -> {
             T result = COptional.this.get();
-            if (Objects.nonNull(function) && Objects.nonNull(result)) {
+            if (Objects.nonNull(result)) {
                 return function.apply(result).get();
             } else {
                 return null;
@@ -72,7 +72,7 @@ final class COptional<T> {
     public <U> COptional<U> map(Function<T, U> function) {
         return new COptional<>(() -> {
             T result = COptional.this.get();
-            if (Objects.nonNull(function) && Objects.nonNull(result)) {
+            if (Objects.nonNull(result)) {
                 return function.apply(result);
             } else {
                 return null;
@@ -119,20 +119,18 @@ final class COptional<T> {
 
     public void ifPresent(Consumer<T> consumer) {
         T result = COptional.this.get();
-        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+        if (Objects.nonNull(result)) {
             consumer.accept(result);
         }
-        return;
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
         T result = COptional.this.get();
-        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+        if (Objects.nonNull(result)) {
             consumer.accept(result);
         } else {
             runnable.run();
         }
-        return;
     }
 
     public int hashCode() {
