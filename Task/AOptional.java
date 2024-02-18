@@ -1,7 +1,5 @@
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 public abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> of(T value) {
