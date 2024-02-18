@@ -1,9 +1,9 @@
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+package event;
 
-final class COptional<T> {
+import java.util.*;
+import java.util.function.*;
+
+public class COptional<T> {
     private Supplier<T> value;
 
     private COptional(Supplier<T> value) {
@@ -159,7 +159,7 @@ final class COptional<T> {
                 .isPresent();
     }
 
-    public <U> boolean equals(COptional<U> other) {
-        return Objects.nonNull(other) && Objects.equals(other.get(), COptional.this.get());
+    private <U> boolean equals(COptional<U> other) {
+        return Objects.equals(other.get(), COptional.this.get());
     }
 }
