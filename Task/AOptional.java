@@ -47,8 +47,8 @@ public abstract class AOptional<T> implements Supplier<T> {
         return new AOptional<>() {
             public T get() {
                 T result = AOptional.this.get();
-                if (Objects.nonNull(function) && Objects.nonNull(result) && function.apply(result)) {
-                    return result;
+                if (Objects.nonNull(result)) {
+                    return function.apply(result) ? result : null;
                 } else {
                     return null;
                 }
@@ -60,7 +60,7 @@ public abstract class AOptional<T> implements Supplier<T> {
         return new AOptional<>() {
             public U get() {
                 T result = AOptional.this.get();
-                if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                if (Objects.nonNull(result)) {
                     return function.apply(result).get();
                 } else {
                     return null;
@@ -73,7 +73,7 @@ public abstract class AOptional<T> implements Supplier<T> {
         return new AOptional<>() {
             public U get() {
                 T result = AOptional.this.get();
-                if (Objects.nonNull(function) && Objects.nonNull(result)) {
+                if (Objects.nonNull(result)) {
                     return function.apply(result);
                 } else {
                     return null;
@@ -121,20 +121,18 @@ public abstract class AOptional<T> implements Supplier<T> {
 
     public void ifPresent(Consumer<T> consumer) {
         T result = AOptional.this.get();
-        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+        if (Objects.nonNull(result)) {
             consumer.accept(result);
         }
-        return;
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
         T result = AOptional.this.get();
-        if (Objects.nonNull(consumer) && Objects.nonNull(result)) {
+        if (Objects.nonNull(result)) {
             consumer.accept(result);
         } else {
             runnable.run();
         }
-        return;
     }
 
     public int hashCode() {
