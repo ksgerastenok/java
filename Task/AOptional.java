@@ -161,7 +161,7 @@ public abstract class AOptional<T> implements Supplier<T> {
                 .isPresent();
     }
 
-    public <U> boolean equals(AOptional<U> other) {
-        return Objects.nonNull(other) && Objects.equals(other.get(), AOptional.this.get());
+    private <U> boolean equals(AOptional<U> other) {
+        return Objects.equals(other.get(), AOptional.this.get());
     }
 }
