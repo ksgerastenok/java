@@ -1,8 +1,6 @@
 package event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 public class CStream<T> {
@@ -19,7 +17,7 @@ public class CStream<T> {
     public static <T> CStream<T> of(Collection<T> values) {
         return new CStream<>(() -> {
             if (Objects.nonNull(values)) {
-                return new ArrayList<>(values);
+                return new LinkedList<>(values);
             }
             throw new NullPointerException();
         });
@@ -28,20 +26,44 @@ public class CStream<T> {
     public static <T> CStream<T> ofNullable(Collection<T> values) {
         return new CStream<>(() -> {
             if (Objects.nonNull(values)) {
-                return new ArrayList<>(values);
+                return new LinkedList<>(values);
             }
-            return new ArrayList<>();
+            return new LinkedList<>();
         });
     }
 
     public CStream<T> filter(Function<T, Boolean> function) {
         return new CStream<>(() -> {
-            Collection<T> result = new ArrayList<>();
-            if (Objects.nonNull(function)) {
-                for (T value : CStream.this.get()) {
-                    if (function.apply(value)) {
-                        result.add(value);
-                    }
+            Collection<T> result = new LinkedList<>();
+            for (T value : CStream.this.get()) {
+                if (function.apply(value)) {
+                    result.add(value);
+                }
+            }
+            return result;
+        });
+    }
+
+    public CStream<T> distinct() {
+        return new CStream<>(() -> {
+            Collection<T> result = new LinkedList<>();
+            Set<T> tmp = new HashSet<>();
+            for (T value : CStream.this.get()) {
+                if (tmp.add(value)) {
+                    result.add(value);
+                }
+            }
+            return result;
+        });
+    }
+
+    public <U> CStream<T> distinct(Function<T, U> function) {
+        return new CStream<>(() -> {
+            Collection<T> result = new LinkedList<>();
+            Set<U> tmp = new HashSet<>();
+            for (T value : CStream.this.get()) {
+                if (tmp.add(function.apply(value))) {
+                    result.add(value);
                 }
             }
             return result;
@@ -50,11 +72,9 @@ public class CStream<T> {
 
     public <U> CStream<U> map(Function<T, U> function) {
         return new CStream<>(() -> {
-            Collection<U> result = new ArrayList<>();
-            if (Objects.nonNull(function)) {
-                for (T value : CStream.this.get()) {
-                    result.add(function.apply(value));
-                }
+            Collection<U> result = new LinkedList<>();
+            for (T value : CStream.this.get()) {
+                result.add(function.apply(value));
             }
             return result;
         });
@@ -62,23 +82,18 @@ public class CStream<T> {
 
     public <U> CStream<U> flatMap(Function<T, CStream<U>> function) {
         return new CStream<>(() -> {
-            Collection<U> result = new ArrayList<>();
-            if (Objects.nonNull(function)) {
-                for (T value : CStream.this.get()) {
-                    result.addAll(function.apply(value).get());
-                }
+            Collection<U> result = new LinkedList<>();
+            for (T value : CStream.this.get()) {
+                result.addAll(function.apply(value).get());
             }
             return result;
         });
     }
 
     public void forEach(Consumer<T> consumer) {
-        if (Objects.nonNull(consumer)) {
-            for (T value : CStream.this.get()) {
-                consumer.accept(value);
-            }
+        for (T value : CStream.this.get()) {
+            consumer.accept(value);
         }
-        return;
     }
 
     public int count() {
@@ -133,7 +148,7 @@ public class CStream<T> {
                 .isPresent();
     }
 
-    public <U> boolean equals(CStream<U> other) {
-        return Objects.nonNull(other) && Objects.equals(other.get(), CStream.this.get());
+    private <U> boolean equals(CStream<U> other) {
+        return Objects.equals(other.get(), CStream.this.get());
     }
 }
