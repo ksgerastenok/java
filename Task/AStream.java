@@ -1,8 +1,6 @@
 package event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 public abstract class AStream<T> implements Supplier<Collection<T>> {
@@ -10,7 +8,7 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
         return new AStream<>() {
             public Collection<T> get() {
                 if (Objects.nonNull(values)) {
-                    return new ArrayList<>(values);
+                    return new LinkedList<>(values);
                 }
                 throw new NullPointerException();
             }
@@ -21,9 +19,9 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
         return new AStream<>() {
             public Collection<T> get() {
                 if (Objects.nonNull(values)) {
-                    return new ArrayList<>(values);
+                    return new LinkedList<>(values);
                 }
-                return new ArrayList<>();
+                return new LinkedList<>();
             }
         };
     }
@@ -31,12 +29,40 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     public AStream<T> filter(Function<T, Boolean> function) {
         return new AStream<>() {
             public Collection<T> get() {
-                Collection<T> result = new ArrayList<>();
-                if (Objects.nonNull(function)) {
-                    for (T value : AStream.this.get()) {
-                        if (function.apply(value)) {
-                            result.add(value);
-                        }
+                Collection<T> result = new LinkedList<>();
+                for (T value : AStream.this.get()) {
+                    if (function.apply(value)) {
+                        result.add(value);
+                    }
+                }
+                return result;
+            }
+        };
+    }
+
+    public AStream<T> distinct() {
+        return new AStream<>() {
+            public Collection<T> get() {
+                Collection<T> result = new LinkedList<>();
+                Set<T> tmp = new HashSet<>();
+                for (T value : AStream.this.get()) {
+                    if (tmp.add(value)) {
+                        result.add(value);
+                    }
+                }
+                return result;
+            }
+        };
+    }
+
+    public <U> AStream<T> distinct(Function<T, U> function) {
+        return new AStream<>() {
+            public Collection<T> get() {
+                Collection<T> result = new LinkedList<>();
+                Set<U> tmp = new HashSet<>();
+                for (T value : AStream.this.get()) {
+                    if (tmp.add(function.apply(value))) {
+                        result.add(value);
                     }
                 }
                 return result;
@@ -47,11 +73,9 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     public <U> AStream<U> map(Function<T, U> function) {
         return new AStream<>() {
             public Collection<U> get() {
-                Collection<U> result = new ArrayList<>();
-                if (Objects.nonNull(function)) {
-                    for (T value : AStream.this.get()) {
-                        result.add(function.apply(value));
-                    }
+                Collection<U> result = new LinkedList<>();
+                for (T value : AStream.this.get()) {
+                    result.add(function.apply(value));
                 }
                 return result;
             }
@@ -61,11 +85,9 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     public <U> AStream<U> flatMap(Function<T, AStream<U>> function) {
         return new AStream<>() {
             public Collection<U> get() {
-                Collection<U> result = new ArrayList<>();
-                if (Objects.nonNull(function)) {
-                    for (T value : AStream.this.get()) {
-                        result.addAll(function.apply(value).get());
-                    }
+                Collection<U> result = new LinkedList<>();
+                for (T value : AStream.this.get()) {
+                    result.addAll(function.apply(value).get());
                 }
                 return result;
             }
@@ -73,12 +95,9 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     }
 
     public void forEach(Consumer<T> consumer) {
-        if (Objects.nonNull(consumer)) {
-            for (T value : AStream.this.get()) {
-                consumer.accept(value);
-            }
+        for (T value : AStream.this.get()) {
+            consumer.accept(value);
         }
-        return;
     }
 
     public int count() {
@@ -126,14 +145,14 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     }
 
     public boolean equals(Object other) {
-        return COptional.ofNullable(other)
+        return AOptional.ofNullable(other)
                 .filter(AStream.class::isInstance)
                 .map(AStream.class::cast)
                 .filter(AStream.this::equals)
                 .isPresent();
     }
 
-    public <U> boolean equals(AStream<U> other) {
-        return Objects.nonNull(other) && Objects.equals(other.get(), AStream.this.get());
+    private <U> boolean equals(AStream<U> other) {
+        return Objects.equals(other.get(), AStream.this.get());
     }
 }
