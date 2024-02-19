@@ -44,32 +44,6 @@ public class CStream<T> {
         });
     }
 
-    public CStream<T> distinct() {
-        return new CStream<>(() -> {
-            Collection<T> result = new LinkedList<>();
-            Set<T> tmp = new HashSet<>();
-            for (T value : CStream.this.get()) {
-                if (tmp.add(value)) {
-                    result.add(value);
-                }
-            }
-            return result;
-        });
-    }
-
-    public <U> CStream<T> distinct(Function<T, U> function) {
-        return new CStream<>(() -> {
-            Collection<T> result = new LinkedList<>();
-            Set<U> tmp = new HashSet<>();
-            for (T value : CStream.this.get()) {
-                if (tmp.add(function.apply(value))) {
-                    result.add(value);
-                }
-            }
-            return result;
-        });
-    }
-
     public <U> CStream<U> map(Function<T, U> function) {
         return new CStream<>(() -> {
             Collection<U> result = new LinkedList<>();
@@ -88,6 +62,16 @@ public class CStream<T> {
             }
             return result;
         });
+    }
+    
+    public CStream<T> distinct() {
+        Set<T> seen = new HashSet<>();
+        return filter(seen::add);
+    }
+
+    public <U> CStream<T> distinct(Function<T, U> function) {
+        Set<U> seen = new HashSet<>();
+        return filter(function.andThen(seen::add));
     }
 
     public void forEach(Consumer<T> consumer) {
