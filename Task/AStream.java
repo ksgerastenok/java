@@ -41,33 +41,13 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     }
 
     public AStream<T> distinct() {
-        return new AStream<>() {
-            public Collection<T> get() {
-                Collection<T> result = new LinkedList<>();
-                Set<T> tmp = new HashSet<>();
-                for (T value : AStream.this.get()) {
-                    if (tmp.add(value)) {
-                        result.add(value);
-                    }
-                }
-                return result;
-            }
-        };
+        Set<T> seen = new HashSet<>();
+        return filter(seen::add);
     }
 
     public <U> AStream<T> distinct(Function<T, U> function) {
-        return new AStream<>() {
-            public Collection<T> get() {
-                Collection<T> result = new LinkedList<>();
-                Set<U> tmp = new HashSet<>();
-                for (T value : AStream.this.get()) {
-                    if (tmp.add(function.apply(value))) {
-                        result.add(value);
-                    }
-                }
-                return result;
-            }
-        };
+        Set<U> seen = new HashSet<>();
+        return filter(function.andThen(seen::add));
     }
 
     public <U> AStream<U> map(Function<T, U> function) {
