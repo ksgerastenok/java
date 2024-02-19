@@ -40,16 +40,6 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
         };
     }
 
-    public AStream<T> distinct() {
-        Set<T> seen = new HashSet<>();
-        return filter(seen::add);
-    }
-
-    public <U> AStream<T> distinct(Function<T, U> function) {
-        Set<U> seen = new HashSet<>();
-        return filter(function.andThen(seen::add));
-    }
-
     public <U> AStream<U> map(Function<T, U> function) {
         return new AStream<>() {
             public Collection<U> get() {
@@ -72,6 +62,16 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
                 return result;
             }
         };
+    }
+    
+    public AStream<T> distinct() {
+        Set<T> seen = new HashSet<>();
+        return filter(seen::add);
+    }
+
+    public <U> AStream<T> distinct(Function<T, U> function) {
+        Set<U> seen = new HashSet<>();
+        return filter(function.andThen(seen::add));
     }
 
     public void forEach(Consumer<T> consumer) {
