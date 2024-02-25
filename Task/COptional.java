@@ -15,25 +15,11 @@ public class COptional<T> {
     }
 
     public static <T> COptional<T> of(T value) {
-        return new COptional<>(() -> {
-            T result = value;
-            if (Objects.nonNull(result)) {
-                return result;
-            } else {
-                throw new NullPointerException();
-            }
-        });
+        return new COptional<>(() -> Objects.requireNonNull(value));
     }
 
     public static <T> COptional<T> ofNullable(T value) {
-        return new COptional<>(() -> {
-            T result = value;
-            if (Objects.nonNull(result)) {
-                return result;
-            } else {
-                return null;
-            }
-        });
+        return new COptional<>(() -> value);
     }
 
     public COptional<T> or(COptional<T> other) {
@@ -42,7 +28,7 @@ public class COptional<T> {
             if (Objects.nonNull(result)) {
                 return result;
             } else {
-                return other.get();
+                return Objects.requireNonNull(other).get();
             }
         });
     }
@@ -51,7 +37,7 @@ public class COptional<T> {
         return new COptional<>(() -> {
             T result = COptional.this.get();
             if (Objects.nonNull(result)) {
-                return function.apply(result) ? result : null;
+                return Objects.requireNonNull(function).apply(result) ? result : null;
             } else {
                 return null;
             }
@@ -62,7 +48,7 @@ public class COptional<T> {
         return new COptional<>(() -> {
             T result = COptional.this.get();
             if (Objects.nonNull(result)) {
-                return function.apply(result).get();
+                return Objects.requireNonNull(function).apply(result).get();
             } else {
                 return null;
             }
@@ -73,7 +59,7 @@ public class COptional<T> {
         return new COptional<>(() -> {
             T result = COptional.this.get();
             if (Objects.nonNull(result)) {
-                return function.apply(result);
+                return Objects.requireNonNull(function).apply(result);
             } else {
                 return null;
             }
@@ -103,7 +89,7 @@ public class COptional<T> {
         if (Objects.nonNull(result)) {
             return result;
         } else {
-            throw exception;
+            throw Objects.requireNonNull(exception);
         }
     }
 
@@ -120,16 +106,16 @@ public class COptional<T> {
     public void ifPresent(Consumer<T> consumer) {
         T result = COptional.this.get();
         if (Objects.nonNull(result)) {
-            consumer.accept(result);
+            Objects.requireNonNull(consumer).accept(result);
         }
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
         T result = COptional.this.get();
         if (Objects.nonNull(result)) {
-            consumer.accept(result);
+            Objects.requireNonNull(consumer).accept(result);
         } else {
-            runnable.run();
+            Objects.requireNonNull(runnable).run();
         }
     }
 
