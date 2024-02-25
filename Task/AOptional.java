@@ -7,12 +7,7 @@ public abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> of(T value) {
         return new AOptional<>() {
             public T get() {
-                T result = value;
-                if (Objects.nonNull(result)) {
-                    return result;
-                } else {
-                    throw new NullPointerException();
-                }
+                return Objects.requireNonNull(value);
             }
         };
     }
@@ -20,12 +15,7 @@ public abstract class AOptional<T> implements Supplier<T> {
     public static <T> AOptional<T> ofNullable(T value) {
         return new AOptional<>() {
             public T get() {
-                T result = value;
-                if (Objects.nonNull(result)) {
-                    return result;
-                } else {
-                    return null;
-                }
+                return value;
             }
         };
     }
@@ -37,7 +27,7 @@ public abstract class AOptional<T> implements Supplier<T> {
                 if (Objects.nonNull(result)) {
                     return result;
                 } else {
-                    return other.get();
+                    return Objects.requireNonNull(other).get();
                 }
             }
         };
@@ -48,7 +38,7 @@ public abstract class AOptional<T> implements Supplier<T> {
             public T get() {
                 T result = AOptional.this.get();
                 if (Objects.nonNull(result)) {
-                    return function.apply(result) ? result : null;
+                    return Objects.requireNonNull(function).apply(result) ? result : null;
                 } else {
                     return null;
                 }
@@ -61,7 +51,7 @@ public abstract class AOptional<T> implements Supplier<T> {
             public U get() {
                 T result = AOptional.this.get();
                 if (Objects.nonNull(result)) {
-                    return function.apply(result).get();
+                    return Objects.requireNonNull(function).apply(result).get();
                 } else {
                     return null;
                 }
@@ -74,7 +64,7 @@ public abstract class AOptional<T> implements Supplier<T> {
             public U get() {
                 T result = AOptional.this.get();
                 if (Objects.nonNull(result)) {
-                    return function.apply(result);
+                    return Objects.requireNonNull(function).apply(result);
                 } else {
                     return null;
                 }
@@ -105,7 +95,7 @@ public abstract class AOptional<T> implements Supplier<T> {
         if (Objects.nonNull(result)) {
             return result;
         } else {
-            throw exception;
+            throw Objects.requireNonNull(exception);
         }
     }
 
@@ -122,16 +112,16 @@ public abstract class AOptional<T> implements Supplier<T> {
     public void ifPresent(Consumer<T> consumer) {
         T result = AOptional.this.get();
         if (Objects.nonNull(result)) {
-            consumer.accept(result);
+            Objects.requireNonNull(consumer).accept(result);
         }
     }
 
     public void ifPresent(Consumer<T> consumer, Runnable runnable) {
         T result = AOptional.this.get();
         if (Objects.nonNull(result)) {
-            consumer.accept(result);
+            Objects.requireNonNull(consumer).accept(result);
         } else {
-            runnable.run();
+            Objects.requireNonNull(runnable).run();
         }
     }
 
