@@ -31,7 +31,7 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
             public Collection<T> get() {
                 Collection<T> result = new LinkedList<>();
                 for (T value : AStream.this.get()) {
-                    if (function.apply(value)) {
+                    if (Objects.requireNonNull(function).apply(value)) {
                         result.add(value);
                     }
                 }
@@ -45,7 +45,7 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
             public Collection<U> get() {
                 Collection<U> result = new LinkedList<>();
                 for (T value : AStream.this.get()) {
-                    result.add(function.apply(value));
+                    result.add(Objects.requireNonNull(function).apply(value));
                 }
                 return result;
             }
@@ -57,26 +57,26 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
             public Collection<U> get() {
                 Collection<U> result = new LinkedList<>();
                 for (T value : AStream.this.get()) {
-                    result.addAll(function.apply(value).get());
+                    result.addAll(Objects.requireNonNull(function).apply(value).get());
                 }
                 return result;
             }
         };
     }
-    
+
     public AStream<T> distinct() {
         Set<T> seen = new HashSet<>();
-        return filter(seen::add);
+        return AStream.this.filter(seen::add);
     }
 
     public <U> AStream<T> distinct(Function<T, U> function) {
         Set<U> seen = new HashSet<>();
-        return filter(function.andThen(seen::add));
+        return AStream.this.filter(Objects.requireNonNull(function).andThen(seen::add));
     }
 
     public void forEach(Consumer<T> consumer) {
         for (T value : AStream.this.get()) {
-            consumer.accept(value);
+            Objects.requireNonNull(consumer).accept(value);
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     public boolean anyMatch(Predicate<T> predicate) {
         boolean result = false;
         for (T value : AStream.this.get()) {
-            result |= predicate.test(value);
+            result |= Objects.requireNonNull(predicate).test(value);
         }
         return result;
     }
@@ -95,15 +95,15 @@ public abstract class AStream<T> implements Supplier<Collection<T>> {
     public boolean allMatch(Predicate<T> predicate) {
         boolean result = true;
         for (T value : AStream.this.get()) {
-            result &= predicate.test(value);
+            result &= Objects.requireNonNull(predicate).test(value);
         }
         return result;
     }
 
     public T reduce(T identity, BinaryOperator<T> accumulator) {
-        T result = identity;
+        T result = Objects.requireNonNull(identity);
         for (T value : AStream.this.get()) {
-            result = accumulator.apply(result, value);
+            result = Objects.requireNonNull(accumulator).apply(result, value);
         }
         return result;
     }
