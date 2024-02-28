@@ -19,24 +19,26 @@ public class Program {
         return result.toString();
     }
 
-    public static void deleteSpaces(char[] data, char delimiter) {
+    public static void deleteSpaces(char[] data) {
         int count = 0;
 
         for (int i = 0; i != data.length; i += 1) {
-            if (data[i] != delimiter) {
+            if (data[i] == ' ') {
+                if ((i - count - 1 == -1) || (data[i - count - 1] == ' ')) {
+                    count += 1;
+                }
+            } else {
                 char tmp;
                 tmp = data[i - count];
                 data[i - count] = data[i];
                 data[i] = tmp;
-            } else {
-                if (((i - count - 1 < 0) || (data[i - count - 1] == delimiter))) {
-                    count += 1;
-                }
             }
         }
+
+        return;
     }
 
     public static void main(String[] args) {
-        System.out.println(deleteSpaces("___On__my___home_world___", '_'));
+        System.out.println(deleteSpaces("   On  my   home world   ", ' '));
     }
 }
