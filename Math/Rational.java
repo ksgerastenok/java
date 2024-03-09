@@ -5,9 +5,8 @@ public class Rational extends Object {
     private final long b;
 
     private Rational(long a, long b) {
-        long gcd = Rational.gcd(a, b);
-        this.a = a / gcd;
-        this.b = b / gcd;
+        this.a = a;
+        this.b = b;
     }
 
     public Rational add(Rational other) {
@@ -49,7 +48,8 @@ public class Rational extends Object {
     }
 
     public static Rational of(long a, long b) {
-        return new Rational(a, b);
+        long gcd = Rational.gcd(a, b);
+        return new Rational(a / gcd, b / gcd);
     }
 
     private static long gcd(long a, long b) {
