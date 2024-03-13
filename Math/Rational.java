@@ -6,11 +6,11 @@ public class Rational extends Object {
 
     private Rational(long a, long b) {
         if (b < 0) {
-            this.a = -a;
-            this.b = -b;
+            this.a = -1 * a;
+            this.b = -1 * b;
         } else {
-            this.a = +a;
-            this.b = +b;
+            this.a = +1 * a;
+            this.b = +1 * b;
         }
     }
 
