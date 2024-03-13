@@ -5,18 +5,21 @@ public class Rational extends Object {
     private final long b;
 
     private Rational(long a, long b) {
-        this.a = a;
-        this.b = b;
+        if (b < 0) {
+            this.a = -a;
+            this.b = -b;
+        } else {
+            this.a = +a;
+            this.b = +b;
+        }
     }
 
     public Rational add(Rational other) {
-        long gcd = Rational.gcd(this.b, other.b);
-        return Rational.of(this.a * (other.b / gcd) + other.a * (this.b / gcd), gcd * (this.b / gcd) * (other.b / gcd));
+        return Rational.of(this.a * other.b + this.b * other.a, this.b * other.b);
     }
 
     public Rational sub(Rational other) {
-        long gcd = Rational.gcd(this.b, other.b);
-        return Rational.of(this.a * (other.b / gcd) - other.a * (this.b / gcd), gcd * (this.b / gcd) * (other.b / gcd));
+        return Rational.of(this.a * other.b - this.b * other.a, this.b * other.b);
     }
 
     public Rational mul(Rational other) {
@@ -40,7 +43,7 @@ public class Rational extends Object {
     }
 
     public int hashCode() {
-        return Long.valueOf(31 * this.a + 35 * this.b).intValue();
+        return Long.valueOf(31 * this.a + 37 * this.b).intValue();
     }
 
     private boolean equals(Rational other) {
@@ -53,6 +56,8 @@ public class Rational extends Object {
     }
 
     private static long gcd(long a, long b) {
-        return b == 0 ? a : gcd(b, a % b);
+        return (b == 0)
+            ? a
+            : Rational.gcd(b, a % b);
     }
 }
