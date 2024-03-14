@@ -6,15 +6,17 @@ public class Rational extends Object {
 
   private Rational(long a, long b) {
     if (b < 0) {
-      this.a = -a;
-      this.b = -b;
+      long gcd = Rational.gcd(Math.abs(a), Math.abs(b));
+      this.a = -a / gcd;
+      this.b = -b / gcd;
     }
     if (b == 0) {
       throw new ArithmeticException("Division by 0");
     }
     if (b > 0) {
-      this.a = +a;
-      this.b = +b;
+      long gcd = Rational.gcd(Math.abs(a), Math.abs(b));
+      this.a = +a / gcd;
+      this.b = +b / gcd;
     }
   }
 
@@ -62,7 +64,6 @@ public class Rational extends Object {
   }
 
   public static Rational of(long a, long b) {
-    long gcd = Rational.gcd(Math.abs(a), Math.abs(b));
-    return new Rational(a / gcd, b / gcd);
+    return new Rational(a, b);
   }
 }
