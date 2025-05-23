@@ -3,139 +3,198 @@ package event;
 import java.util.*;
 import java.util.function.*;
 
-public interface IOptional<T> extends Supplier<T> {
-    static <T> IOptional<T> of(T value) {
-        return () -> Objects.requireNonNull(value);
-    }
+interface Optional<T> extends Supplier<T> {
+  static <T> Optional<T> ofNullable(T value) {
+    return () -> value;
+  }
 
-    static <T> IOptional<T> ofNullable(T value) {
-        return () -> value;
-    }
+  static <T> Optional<T> of(T value) {
+    return () -> Objects.requireNonNull(value);
+  }
 
-    default IOptional<T> or(IOptional<T> other) {
-        return () -> {
-            T result = IOptional.this.get();
-            if (Objects.nonNull(result)) {
-                return result;
-            } else {
-                return Objects.requireNonNull(other).get();
-            }
-        };
-    }
+  static <T> Optional<T> or(Optional<T> optional, Optional<T> other) {
+    return () -> {
+      T value = Objects.requireNonNull(optional).get();
+      if (Objects.nonNull(value)) {
+        return value;
+      } else {
+        return Objects.requireNonNull(other).get();
+      }
+    };
+  }
 
-    default IOptional<T> filter(Function<T, Boolean> function) {
-        return () -> {
-            T result = IOptional.this.get();
-            if (Objects.nonNull(result)) {
-                return Objects.requireNonNull(function).apply(result) ? result : null;
-            } else {
-                return null;
-            }
-        };
-    }
+  static <T, R> Optional<R> map(Optional<T> optional, Function<T, R> function) {
+    return () -> {
+      T value = Objects.requireNonNull(optional).get();
+      if (Objects.nonNull(value)) {
+        return Objects.requireNonNull(function).apply(value);
+      } else {
+        return null;
+      }
+    };
+  }
 
-    default <U> IOptional<U> flatMap(Function<T, IOptional<U>> function) {
-        return () -> {
-            T result = IOptional.this.get();
-            if (Objects.nonNull(result)) {
-                return Objects.requireNonNull(function).apply(result).get();
-            } else {
-                return null;
-            }
-        };
-    }
+  static <T, R> Optional<R> flatMap(Optional<T> optional, Function<T, Optional<R>> function) {
+    return () -> {
+      T value = Objects.requireNonNull(optional).get();
+      if (Objects.nonNull(value)) {
+        return Objects.requireNonNull(Objects.requireNonNull(function).apply(value)).get();
+      } else {
+        return null;
+      }
+    };
+  }
 
-    default <U> IOptional<U> map(Function<T, U> function) {
-        return () -> {
-            T result = IOptional.this.get();
-            if (Objects.nonNull(result)) {
-                return Objects.requireNonNull(function).apply(result);
-            } else {
-                return null;
-            }
-        };
-    }
+  static <T> Optional<T> filter(Optional<T> optional, Predicate<T> predicate) {
+    return () -> {
+      T value = Objects.requireNonNull(optional).get();
+      if (Objects.nonNull(value)) {
+        return Objects.requireNonNull(predicate).test(value) ? value : null;
+      } else {
+        return null;
+      }
+    };
+  }
 
-    default T orElse(T other) {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            return result;
-        } else {
-            return other;
-        }
-    }
+  static <T> boolean isPresent(Optional<T> optional) {
+    T value = Objects.requireNonNull(optional).get();
+    return Objects.nonNull(value);
+  }
 
-    default T orElseThrow() {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            return result;
-        } else {
-            throw new NullPointerException();
-        }
+  static <T> T orElse(Optional<T> optional, T other) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return value;
+    } else {
+      return other;
     }
+  }
 
-    default <E extends Exception> T orElseThrow(E exception) throws E {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            return result;
-        } else {
-            throw Objects.requireNonNull(exception);
-        }
+  static <T> T orElse(Optional<T> optional, Supplier<T> other) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return value;
+    } else {
+      return Objects.requireNonNull(other).get();
     }
+  }
 
-    default boolean isEmpty() {
-        T result = IOptional.this.get();
-        return Objects.isNull(result);
+  static <T> T orElseThrow(Optional<T> optional) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return value;
+    } else {
+      throw new NullPointerException();
     }
+  }
 
-    default boolean isPresent() {
-        T result = IOptional.this.get();
-        return Objects.nonNull(result);
+  static <T, E extends Exception> T orElseThrow(Optional<T> optional, E exception) throws E {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return value;
+    } else {
+      throw Objects.requireNonNull(exception);
     }
+  }
 
-    default void ifPresent(Consumer<T> consumer) {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            Objects.requireNonNull(consumer).accept(result);
-        }
+  static <T, E extends Exception> T orElseThrow(Optional<T> optional, Supplier<E> exception) throws E {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return value;
+    } else {
+      throw Objects.requireNonNull(exception).get();
     }
+  }
 
-    default void ifPresent(Consumer<T> consumer, Runnable runnable) {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            Objects.requireNonNull(consumer).accept(result);
-        } else {
-            Objects.requireNonNull(runnable).run();
-        }
+  static <T> void ifPresent(Optional<T> optional, Consumer<T> consumer) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      Objects.requireNonNull(consumer).accept(value);
+    } else {
+      return;
     }
+  }
 
-    default int hash() {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            return result.hashCode();
-        } else {
-            return 0;
-        }
+  static <T> void ifPresent(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      Objects.requireNonNull(consumer).accept(value);
+    } else {
+      Objects.requireNonNull(runnable).run();
     }
+  }
 
-    default String string() {
-        T result = IOptional.this.get();
-        if (Objects.nonNull(result)) {
-            return String.format("IOptional[%s]", result);
-        } else {
-            return String.format("IOptional[%s]", "empty");
-        }
+  static <T, R> R ifPresent(Optional<T> optional, Function<T, R> function) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return Objects.requireNonNull(function).apply(value);
+    } else {
+      return null;
     }
+  }
+  
+  static <T, R> R ifPresent(Optional<T> optional, Function<T, R> function, Supplier<R> supplier) {
+    T value = Objects.requireNonNull(optional).get();
+    if (Objects.nonNull(value)) {
+      return Objects.requireNonNull(function).apply(value);
+    } else {
+      return Objects.requireNonNull(supplier).get();
+    }
+  }
 
-    default boolean equal(Object other) {
-        return IOptional.ofNullable(other)
-                .filter(IOptional.class::isInstance)
-                .map(IOptional.class::cast)
-                .filter(IOptional.this::equal)
-                .isPresent();
-    }
+  default Optional<T> or(Optional<T> other) {
+    return Optional.or(this, other);
+  }
 
-    private <U> boolean equal(IOptional<U> other) {
-        return Objects.equals(other.get(), IOptional.this.get());
-    }
+  default <R> Optional<R> map(Function<T, R> function) {
+    return Optional.map(this, function);
+  }
+
+  default <R> Optional<R> flatMap(Function<T, Optional<R>> function) {
+    return Optional.flatMap(this, function);
+  }
+
+  default Optional<T> filter(Predicate<T> predicate) {
+    return Optional.filter(this, predicate);
+  }
+
+  default boolean isPresent() {
+    return Optional.isPresent(this);
+  }
+
+  default T orElse(T other) {
+    return Optional.orElse(this, other);
+  }
+
+  default T orElse(Supplier<T> other) {
+    return Optional.orElse(this, other);
+  }
+
+  default T orElseThrow() {
+    return Optional.orElseThrow(this);
+  }
+
+  default <E extends Exception> T orElseThrow(E exception) throws E {
+    return Optional.orElseThrow(this, exception);
+  }
+
+  default <E extends Exception> T orElseThrow(Supplier<E> exception) throws E {
+    return Optional.orElseThrow(this, exception);
+  }
+
+  default void ifPresent(Consumer<T> consumer) {
+    Optional.ifPresent(this, consumer);
+  }
+
+  default void ifPresent(Consumer<T> consumer, Runnable runnable) {
+    Optional.ifPresent(this, consumer, runnable);
+  }
+
+  default <R> R ifPresent(Function<T, R> function) {
+    return Optional.ifPresent(this, function);
+  }
+
+  default <R> R ifPresent(Function<T, R> function, Supplier<R> supplier) {
+    return Optional.ifPresent(this, function, supplier);
+  }
 }
