@@ -124,24 +124,6 @@ interface Optional<T> extends Supplier<T> {
     }
   }
 
-  static <T, R> R ifPresent(Optional<T> optional, Function<T, R> function) {
-    T value = Objects.requireNonNull(optional).get();
-    if (Objects.nonNull(value)) {
-      return Objects.requireNonNull(function).apply(value);
-    } else {
-      return null;
-    }
-  }
-  
-  static <T, R> R ifPresent(Optional<T> optional, Function<T, R> function, Supplier<R> supplier) {
-    T value = Objects.requireNonNull(optional).get();
-    if (Objects.nonNull(value)) {
-      return Objects.requireNonNull(function).apply(value);
-    } else {
-      return Objects.requireNonNull(supplier).get();
-    }
-  }
-
   default Optional<T> or(Optional<T> other) {
     return Optional.or(this, other);
   }
@@ -188,13 +170,5 @@ interface Optional<T> extends Supplier<T> {
 
   default void ifPresent(Consumer<T> consumer, Runnable runnable) {
     Optional.ifPresent(this, consumer, runnable);
-  }
-
-  default <R> R ifPresent(Function<T, R> function) {
-    return Optional.ifPresent(this, function);
-  }
-
-  default <R> R ifPresent(Function<T, R> function, Supplier<R> supplier) {
-    return Optional.ifPresent(this, function, supplier);
   }
 }
